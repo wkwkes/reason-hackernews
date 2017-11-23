@@ -24,13 +24,13 @@ input {
   border-radius: 5px;
   outline: none;
   margin-right: 10px;
-  border: 1px solid #dddddd;
+  border: 1px solid #e44842;
 }
 
 button {
   padding: 10px;
   border-radius: 5px;
-  border: 1px solid #dddddd;
+  border: 1px solid #e44842;
   background: transparent;
   color: #808080;
   cursor: pointer;

@@ -28,10 +28,11 @@
   display: flex;
   line-height: 24px;
   white-space: nowrap;
-  margin: 10px 0;
+  margin: 10px auto;
   padding: 10px;
-  background: #ffffff;
-  border: 1px solid #e3e3e3;
+  background:  #e3e3e3;
+  border: 1px solid #e44842;
+  width: 80%;
 }
 
 .table-header>span {
