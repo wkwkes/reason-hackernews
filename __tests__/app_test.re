@@ -1,6 +1,3 @@
 open Jest;
 
-/* describe("App", () => {
-    open Expect;
-
-}) */
+describe("App", () => Expect.(test("toBe", () => expect(1 + 2) |> toBe(3))));
