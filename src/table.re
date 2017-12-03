@@ -1,4 +1,3 @@
-
 open Utils;
 
 let component = ReasonReact.statelessComponent("Table");
@@ -9,6 +8,13 @@ let make = (~list, ~onDissmiss, _children) => {
   ...component,
   render: (_) =>
     <div className="table">
+      <div className="table-header">
+        <span style=(mk_sty("40%"))> (s2e("Title")) </span>
+        <span style=(mk_sty("30%"))> (s2e("Author")) </span>
+        <span style=(mk_sty("10%"))> (s2e("Comments")) </span>
+        <span style=(mk_sty("10%"))> (s2e("Points")) </span>
+        <span style=(mk_sty("10%"))> (s2e("Archive")) </span>
+      </div>
       (
         l2e(
           list
