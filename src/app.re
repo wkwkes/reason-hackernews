@@ -15,6 +15,7 @@ type action =
   | Change(string)
   | Update(Hashtbl.t(string, (int, list(data))))
   | Submit(string)
+  | UpdateLoad(bool)
   | Nope;
 
 let component = ReasonReact.reducerComponent("App");
@@ -25,7 +26,8 @@ let onDismiss = (results, searchTerm, id, _evt) => {
   Click(results)
 };
 
-let fetchSearchTopStories = (reducer, results, searchTerm, load) => {
+let fetchSearchTopStories = (reducer, isloading, results, searchTerm, load) => {
+  let _ = isloading(true);
   let url = path_base ++ path_search ++ "?" ++ param_search ++ searchTerm ++ "&" ++ page_param;
   let fetch = (url, res, page) =>
     Js.Promise.(
@@ -38,6 +40,7 @@ let fetchSearchTopStories = (reducer, results, searchTerm, load) => {
                (data) => {
                  Hashtbl.add(results, searchTerm, (page, res @ data));
                  reducer(results);
+                 isloading(false);
                  resolve()
                }
              )
@@ -54,7 +57,7 @@ let fetchSearchTopStories = (reducer, results, searchTerm, load) => {
       reducer(results)
     }
   | exception Not_found => fetch(url ++ "0", [], 0)
-  }
+  };
 };
 
 let onSearchChange = (evt) => {
@@ -62,16 +65,16 @@ let onSearchChange = (evt) => {
   Change(vl)
 };
 
-let onSearchSubmit = (reducer, results, evt) => {
+let onSearchSubmit = (reducer, isloading, results, evt) => {
   ReactEventRe.Form.preventDefault(evt);
   let vl = ((ReactDOMRe.domElementToObj(ReactEventRe.Form.target(evt))##children)[0])##value;
-  /* let vl = ((ReactDOMRe.domElementToObj(ReactEventRe.Form.target(evt))##children)[0])##value; */
-  fetchSearchTopStories(reducer, results, vl, false);
+  /* let vl = ((ReactDOMRe.domElementToObj(ReactEventRe.Form.target(evt))##children)[0])##value; */    
+  fetchSearchTopStories(reducer, isloading, results, vl, false);
   Nope
 };
 
-let onLoadMore = (reducer, results, searchTerm, _) => {
-  fetchSearchTopStories(reducer, results, searchTerm, true);
+let onLoadMore = (reducer, isloading, results, searchTerm, _) => {
+  fetchSearchTopStories(reducer, isloading, results, searchTerm, true);
   Nope
 };
 
@@ -84,48 +87,57 @@ let make = (_children) => {
     | Change(inp) => ReasonReact.Update({...state, searchTerm: inp})
     | Update(res) => ReasonReact.Update({...state, results: res})
     | Submit(st) => ReasonReact.Update({...state, searchTerm: st})
+    | UpdateLoad(b) => Js.log(b);ReasonReact.Update({...state, isLoading: b})
     | Nope => ReasonReact.NoUpdate
     },
   didMount: (self) => {
     fetchSearchTopStories(
       self.reduce((data) => Update(data)),
+      self.reduce(b => UpdateLoad(b)),
       self.state.results,
       self.state.searchTerm,
       false
     );
-    ReasonReact.NoUpdate
+    /* ReasonReact.Update({...self.state, isLoading: false}); */
+    ReasonReact.NoUpdate;
   },
-  render: (self) =>
+  render: (self) => {
+    let _ = Js.log(self.state);
     <div className="page">
       <div className="interactions">
         <Search
           value=self.state.searchTerm
           onChange=(self.reduce(onSearchChange))
           onSubmit=(
-            self.reduce(onSearchSubmit(self.reduce((data) => Update(data)), self.state.results))
+            self.reduce(onSearchSubmit(self.reduce((data) => Update(data)), self.reduce((b) => UpdateLoad(b)), self.state.results))
           )>
           (s2e("Search "))
         </Search>
       </div>
       <Table
-        list=(try Hashtbl.(snd(find(self.state.results, self.state.searchTerm))) {
-        | Not_found => []
-        })
+        list=(
+               try Hashtbl.(snd(find(self.state.results, self.state.searchTerm))) {
+               | Not_found => []
+               }
+             )
         onDissmiss=((id) => self.reduce(onDismiss(self.state.results, self.state.searchTerm, id)))
       />
       <div className="interactions">
-        <Button
-          onClick=(
-            self.reduce(
-              onLoadMore(
-                self.reduce((data) => Update(data)),
-                self.state.results,
-                self.state.searchTerm
+          <WithLoad
+            onClick=(
+              self.reduce(
+                onLoadMore(
+                  self.reduce((data) => Update(data)),
+                  self.reduce((b) => UpdateLoad(b)),
+                  self.state.results,
+                  self.state.searchTerm
+                )
               )
             )
-          )>
-          (s2e("More"))
-        </Button>
-      </div>
+            isLoading=self.state.isLoading>
+            (s2e("More"))
+          </WithLoad>
+        </div>
     </div>
+              }
 };
