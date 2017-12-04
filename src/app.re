@@ -87,7 +87,7 @@ let make = (_children) => {
     | Change(inp) => ReasonReact.Update({...state, searchTerm: inp})
     | Update(res) => ReasonReact.Update({...state, results: res})
     | Submit(st) => ReasonReact.Update({...state, searchTerm: st})
-    | UpdateLoad(b) => Js.log(b);ReasonReact.Update({...state, isLoading: b})
+    | UpdateLoad(b) => ReasonReact.Update({...state, isLoading: b})
     | Nope => ReasonReact.NoUpdate
     },
   didMount: (self) => {
@@ -98,11 +98,9 @@ let make = (_children) => {
       self.state.searchTerm,
       false
     );
-    /* ReasonReact.Update({...self.state, isLoading: false}); */
     ReasonReact.NoUpdate;
   },
   render: (self) => {
-    let _ = Js.log(self.state);
     <div className="page">
       <div className="interactions">
         <Search
