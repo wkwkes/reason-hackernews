@@ -1,4 +1,4 @@
-let default_query = "OCaml";
+let default_query = "ReasonReact";
 
 let path_base = "https://hn.algolia.com/api/v1";
 
