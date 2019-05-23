@@ -1,5 +1,5 @@
 {
-  "name": "my-react-app",
+  "name": "reason-hackernews",
   "version": "0.1.0",
   "scripts": {
     "build": "bsb -make-world",
