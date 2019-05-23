@@ -2,13 +2,15 @@
   "name": "reason-hackernews",
   "version": "0.1.0",
   "scripts": {
+    "predeploy": "yarn build && webpack",
     "build": "bsb -make-world",
     "start": "bsb -make-world -w",
     "clean": "bsb -clean-world",
     "test": "echo \"Error: no test specified\" && exit 1",
     "webpack": "webpack -w",
     "webpack:production": "NODE_ENV=production webpack",
-    "server": "webpack-dev-server"
+    "server": "webpack-dev-server",
+    "deploy": "gh-pages -d build"
   },
   "keywords": [
     "BuckleScript"
@@ -19,6 +21,7 @@
     "@glennsl/bs-json": "https://github.com/glennsl/bs-json/archive/v2.0.0.tar.gz",
     "bs-fetch": "^0.3.0",
     "css-loader": "^2.1.1",
+    "gh-pages": "^2.0.1",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
     "reason-react": ">=0.7.0",
